@@ -1,0 +1,220 @@
+//Maaz Azam
+//Thursday, November 9th, 2017
+//Programming 2SH4 L07
+//Lab 4 Question 2
+
+package assignment4;
+
+import java.lang.String;
+import java.util.Arrays;
+import java.lang.Throwable;
+
+
+public class UpperTriangularMatrix {
+    
+    private int[] eff; //variable to store the matrix elements
+    private int size; //variable to store the size of the matrix 
+    
+    public UpperTriangularMatrix(int n) //class definition
+    {
+        int i, j, pos = 0; //initializing variables of integer type
+        
+        if(n <= 0) //if parameter value is less or equal to zero
+        {
+            n = 1; //change the value of parameter to one
+        }
+        
+        size = n; //assign the parameter n value to varaible size
+        eff = new int[size*(size+1)/2]; //defining the new matrix 
+        
+        for(i=0; i < n; i++) //loop that counts up to parameter value 
+        {
+            for(j=i; j < n; j++) //loop that counts up to parameter value 
+            {
+                eff[pos]= 0; //setting the matrix elements to zero
+                pos++; //adds one to the position variable 
+            }
+        }
+    }
+
+    public UpperTriangularMatrix(Matrix upTriM) throws IllegalArgumentException //class definition
+    {
+        int i, j, pos; //initializing variables of integer type
+        
+        if(upTriM.isUpperTr()) //if the matrix is upper triangular
+        {
+            pos = 0; //set the value of the position variable to zero
+            size = upTriM.getRow(); //initializes object to represent upper triangular matrix
+            eff = new int[size*(size+1)/2]; //definiting the new matrix
+            
+            for(i=0; i < size; i++) //loop that counts up to matrix size value
+            {
+                for(j=i; j < size; j++) //loop that counts up to matrix size value
+                {
+                    eff[pos]= upTriM.getMatrix()[i][j]; //storing the matrix values into the matrix elements
+                    pos++; //add one to the position variable 
+                }
+            }
+        }
+        else if(!upTriM.isUpperTr()) //if the matrix is not upper triangular
+        {
+            throw new IllegalArgumentException(); //exception arises
+        }
+    }
+    
+    public int getDim() //class definition
+    {
+        return size; //return the number of rows of the matrix  
+    }
+    
+    public int getElement(int i, int j) throws IndexOutOfBoundsException //class definition
+    {
+        if(i > size || j > size) //if either of the parameters is larger than matrix size
+        {
+            throw new IndexOutOfBoundsException("Invalid Index"); //parameters is out of range
+        }
+        else //if conditional statement is not satisfied 
+        {
+            Matrix temp = this.fullMatrix(); //storing the full matrix within the variable
+            return temp.getElement(i,j); //returns the mtrix elements of row and column
+        }   
+    }
+    
+    public void setElement(int x, int i, int j) throws IndexOutOfBoundsException, IllegalArgumentException //matrix definition
+    {
+        int a, b, pos; //initializing variables of integer type
+        
+        if(i > size || j > size) //if either of the paramaters is larger than matrix size
+        {
+            throw new IndexOutOfBoundsException("Invalid Indexes"); //parameter is out of range
+        }
+  
+        else if(i-j > 0 && x != 0) //if parameter correspond to lower matrix portion 
+        {
+            throw new IllegalArgumentException("Incorrect Argument"); //exception is thrown 
+        }
+        
+        else //if first two conditions above are not satisfied
+        {
+            Matrix temp = this.fullMatrix();
+            pos = 0; //set the position variable to zero
+            boolean tempMat = temp.setElement(x,i,j); //setting elements to matrix
+            
+            for(a=0; a < size; a++) //loop that counts uo to matrix size value
+            {
+                for(b=a; b < size; b++) //loop that counts uo to matrix size value
+                {
+                    eff[pos]= temp.getMatrix()[a][b]; //assigning matrix the matrix elements
+                    pos++; //add one to the position variable
+                }
+            }
+        }
+    }
+    
+    public Matrix fullMatrix() //class definition
+    {
+        int i, j, pos; //initializing variables of integer type
+        int newMat[][]= new int[size][size]; //defining the new matrix
+        pos = 0; //setting position to zero
+        
+        for(i=0; i < size; i++) //loop that counts up to size matrix value
+        {
+            for(j=0; j < size; j++) //loop that counts up to size matrix value
+            {
+                if(i-j <= 0) //checking to see if difference is less or equal to zero
+                {
+                    newMat[i][j]= eff[pos]; //give matrix elements to new matrix
+                    pos++; //add one to the position value
+                }
+                else //if conditional statement is not satisfied
+                {
+                    newMat[i][j]= 0; //set new matrix value to zero
+                }
+            }
+        }
+        return new Matrix(newMat); //return the newly constructed matrix 
+    }
+    
+    public void print1DArray() //class definition
+    {
+        int i; //initializing variable of integer type
+        
+        for(i=0; i < eff.length; i++) //lopp that counts up to matrix element length
+        {
+            System.out.print(eff[i] + "  "); //print the matrix element with blank space
+        }
+    }
+        
+        
+    public String toString() //class definition
+    {
+        Matrix Mat= this.fullMatrix(); //setting full matrix to variable
+        return Mat.toString(); //returning the string of matrix elements 
+    }
+    
+    public int getDet() //class definition
+    {
+    int i, j, det = 1; //initializing variables of integer type   
+    
+    for(i=0; i < this.size; i++) //loop that counts up to size of matrix
+    {
+        for(j=0; j <this.size; j++) //loop that counts up to size of matrix
+        {
+            if(j==i) //if the two parameters are equal in value
+            {
+            det *= fullMatrix().getElement(i, i); //adding diagonal elements 
+            }
+        }
+    }
+    return det; //return determinant of the matrix
+    }
+    
+    public double[] effSolve(double [] b) throws IllegalArgumentException //class definition
+    {
+    int i, j, a, k, p, det = 1; //initializing variables of integer type   
+    
+    for(i=0; i < this.size; i++) //loop that counts up to size of matrix
+    {
+        for(j=0; j <this.size; j++) //loop that counts up to size of matrix
+        {
+            if(j==i) //if the two parameters are equal in value
+            {
+            det *= fullMatrix().getElement(i, i); //adding diagonal elements 
+            }
+        }
+    }
+ 
+    double[] x = b; //assign the double parameter x the value of b
+ 
+    if(det!=0 && b.length == this.size) //if determinant isn't zero and lengths are equal
+    {
+        k = eff.length - 1; //subtract one from matrix elements
+        p = this.size - 1; //subtract one from the matrix size
+        
+                for(int s=p; s>=0; s--) //decreasing constant for loop
+                {
+                    x[s]=b[s]; //assign the value of b parameter to x
+                    
+                    for (a=p; a > s; a--) //decreasing loop that must be less than s 
+                    {
+                        x[s] -= (x[a] * eff[k]); //getting array elements from matrix elements
+                        k--; //decrease the value of k by one
+                    }
+                    
+                    x[s] = (x[s]) / eff[k]; //dividing the elements to store in the array 
+                    k--; //decrease the value of k by one
+                }
+            }
+
+            else if(det==0) //conditional statement if determinant is zero
+            {
+                throw new IllegalArgumentException("The determinant of A is zero."); //exception is thrown
+            }
+            else //if first condition is not satisfied
+            {
+                throw new IllegalArgumentException("Invalid dimension of b."); //exception is thrown
+            }
+    return x; //return the finalized array 
+    } 
+}
+    
